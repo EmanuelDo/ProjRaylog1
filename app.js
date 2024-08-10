@@ -4,6 +4,8 @@ const bp = require('body-parser');
 const dotenv = require('dotenv');
 const sequelize = require('./config/database');
 const Avaliacao = require('./module/avaliacao');
+const fs = require('fs');
+const path = require('path');
 
 dotenv.config();
 
@@ -110,6 +112,19 @@ app.get('/logistica', (req, res) => {
     res.render('logistica');
 });
 
+// Rota para gerar o index.html
+app.get('/generate-index', (req, res) => {
+    app.render('home', (err, html) => {
+        if (err) {
+            console.error('Erro ao renderizar o template:', err);
+            res.status(500).send('Erro ao gerar index.html');
+            return;
+        }
+        // Salvar o HTML gerado em index.html
+        fs.writeFileSync(path.join(__dirname, 'index.html'), html);
+        res.send('index.html gerado com sucesso!');
+    });
+});
 
 app.listen(process.env.PORT, () => {
     console.log(`Servidor rodando em http://localhost:${process.env.PORT}`);
